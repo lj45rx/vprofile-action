@@ -9,6 +9,17 @@ jobs:
   Testing:
     runs-on: ubuntu-latest
     steps:
+      - name: Verify SonarQube token
+        run: |
+            response=$(curl -u ${{ secrets.SONAR_TOKEN }}: https://sonarcloud.io/api/authentication/validate)
+            echo "SonarQube token validation response: $response"
+            valid=$(echo $response | jq -r '.valid')
+            if [ "$valid" != "true" ]; then
+            echo "SonarQube token validation failed"
+            exit 1
+            fi
+            echo "SonarQube token is valid"
+
       - name: Code checkout
         uses: actions/checkout@v4
 
@@ -29,13 +40,12 @@ jobs:
       - name: Setup SonarQube
         uses: warchant/setup-sonar-scanner@v7
 
-
       # Run sonar-scanner
       - name: SonarQube Scan
         run: sonar-scanner -X
            -Dsonar.projectKey=lj45rx_vprofile-action
            -Dsonar.organization=lj45rx
-           -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
            -Dsonar.host.url=https://sonarcloud.io
            -Dsonar.sources=src/
            -Dsonar.junit.reportsPath=target/surefire-reports/ 
