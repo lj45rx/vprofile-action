@@ -7,7 +7,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: vprofileGitOps.lj45rx.de
+  - host: vprofilegitops.lj45rx.de
     http:
       paths:
       - path: /
